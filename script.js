@@ -11,13 +11,13 @@ function drawHearts(){const h='❤️'.repeat(hearts)+'🤍'.repeat(Math.max(0,S
 function drawFound(){let h='';for(let n=S.min;n<=S.max;n++)h+=`<b class="${found.includes(n)?'on':''}">${n}</b>`;$('#found').innerHTML=h}
 async function startCam(){$('#camerr').hidden=true;
 try{if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw 0;
-stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}},audio:false});
 v.srcObject=stream;await v.play();clearInterval(timer);timer=setInterval(tick,250)}catch(e){$('#camerr').hidden=false}}
 function stopCam(){clearInterval(timer);timer=0;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}v.srcObject=null}
-function tick(){if(!v.videoWidth||Date.now()<cool)return;
-const w=Math.min(800,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);cv.width=w;cv.height=h;
+function tick(){if(typeof jsQR==='undefined'){$('#msg').textContent='⚠️ lib/jsQR.js がありません';return}if(!v.videoWidth||Date.now()<cool)return;
+const w=Math.min(1280,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);cv.width=w;cv.height=h;
 const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(v,0,0,w,h);
-const r=jsQR(c.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'dontInvert'});if(r)onCode(r.data)}
+const r=jsQR(c.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(r)onCode(r.data)}
 function onCode(t){const m=/^NUM:(\d+)$/.exec((t||'').trim());if(!m)return;const n=+m[1];
 if(n<S.min||n>S.max){cool=Date.now()+1500;return}
 if(found.includes(n)){cool=Date.now()+1200;return}   // 重複登録しない
