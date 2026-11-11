@@ -29,20 +29,23 @@ function newRound(){found=[];gen++;$('#got').textContent='?';$('#msg').textConte
 const g=n=>'<div class="grp">'+'<i>🐰</i>'.repeat(n)+'</div>';
 function countUp(total,my){$('#bun').innerHTML='<div class="grp all">'+Array.from({length:total},(_,i)=>`<i data-n="${i+1}">🐰</i>`).join('')+'</div>';
 $$('#bun i').forEach((el,i)=>setTimeout(()=>{if(my===gen){el.classList.add('num');tone(500+i*50,.15)}},i*450))}
+function mergeHint(my){const bun=$('#bun');bun.className='';bun.innerHTML=g(found[0])+'<em>＋</em>'+g(found[1]);
+setTimeout(()=>{if(my===gen)bun.classList.add('merge')},600);
+setTimeout(()=>{if(my===gen)countUp(found[0]+found[1],my)},1700)}
 function startCalc(){const a=found[0],b=found[1],ans=a+b;gen++;const my=gen;answered=false;show('calc');drawHearts();
-$('#q').textContent=`${a}＋${b}＝？`;$('#bun').innerHTML=g(a)+'<em>＋</em>'+g(b);$('#hint').hidden=true;$('#hint').className='';
+$('#q').textContent=`${a}＋${b}＝？`;$('#bun').className='';$('#bun').innerHTML=g(a)+'<em>＋</em>'+g(b);$('#hint').hidden=true;$('#hint').className='';
 const pool=[];for(let i=1;i<=Math.max(10,S.max*2);i++)if(i!==ans)pool.push([Math.abs(i-ans)+Math.random()*2.5,i]);
 const opts=pool.sort((x,y)=>x[0]-y[0]).slice(0,S.choices-1).map(x=>x[1]).concat(ans).sort(()=>Math.random()-.5);
 $('#choices').innerHTML=opts.map((n,i)=>`<button class="c c${i%5}" data-n="${n}">${n}</button>`).join('');
 $$('.c').forEach(b=>b.onclick=()=>pick(+b.dataset.n,b,ans));
-say(`${a}たす${b}は、いくつかな？`);setTimeout(()=>{if(my===gen&&!answered)countUp(ans,my)},2600)}
+say(`${a}たす${b}は、いくつかな？`);}
 function pick(n,b,ans){if(answered)return;const h=$('#hint');h.hidden=false;
 if(n===ans){answered=true;hearts++;drawHearts();h.className='ok';h.textContent='🎉 せいかい！';b.classList.add('pop');
 [523,659,784,1046].forEach((f,i)=>tone(f,.25,i*.12));say('せいかい！');
 const f=document.createElement('div');f.className='fly';f.textContent='❤️';document.body.appendChild(f);setTimeout(()=>f.remove(),1700);
 const my=++gen;countUp(ans,my);setTimeout(()=>{hearts>=S.hearts?clear():newRound()},2600)}
 else{const t=['もう一度かんがえてみよう！','うさぎさんを数えてみよう！'][Math.random()*2|0];h.className='';h.textContent='🐰 '+t;
-b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),600);tone(280,.3);say(t);countUp(ans,++gen)}}
+b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),600);tone(280,.3);say(t);mergeHint(++gen)}}
 function clear(){gen++;show('clear');drawHearts();const bx=$('#box');bx.textContent='🎁';bx.className='';
 setTimeout(()=>{bx.textContent='🎉';bx.className='open';tone(392,.2);tone(523,.2,.15);tone(659,.2,.3);tone(784,.5,.45)},900);say('やったね！すごい！');
 const fx=$('#fx');fx.innerHTML='';for(let i=0;i<30;i++){const s=document.createElement('span');s.textContent=['⭐','🌟','✨','🎊'][i%4];s.style.left=Math.random()*95+'vw';s.style.animationDelay=Math.random()*3+'s';fx.appendChild(s)}}

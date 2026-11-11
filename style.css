@@ -41,3 +41,4 @@ h1{font-size:12vh;margin:0;text-align:center;color:#ff6fa5;text-shadow:0 .6vh 0 
 @keyframes shake{25%{transform:translateX(-1vw)}75%{transform:translateX(1vw)}}
 @keyframes fall{to{transform:translateY(115vh) rotate(180deg)}}@keyframes up{to{transform:translateY(-25vh) scale(1.4);opacity:0}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important}}
+#bun{transition:gap .9s}#bun em{transition:all .9s;overflow:hidden}#bun.merge{gap:0}#bun.merge em{opacity:0;width:0;font-size:0}#bun.merge .grp{transition:all .9s;border-radius:3vh}

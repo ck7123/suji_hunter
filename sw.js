@@ -1,3 +1,3 @@
-const C='suji-v2',F=['./','index.html','style.css','script.js','qr-print.html','lib/jsQR.js','lib/qrcode.js'];
+const C='suji-v3',F=['./','index.html','style.css','script.js','qr-print.html','lib/jsQR.js','lib/qrcode.js'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(C).then(c=>c.addAll(F))));
 self.addEventListener('fetch',e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));
