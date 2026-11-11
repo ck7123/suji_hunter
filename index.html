@@ -1,0 +1,27 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes"><title>すうじハンター！</title>
+<link rel="stylesheet" href="style.css"></head><body>
+<section id="title" class="screen active">
+<h1>すうじ<br>ハンター！</h1><div class="zoo">🐰🐻🐱🐶</div>
+<button class="big" id="startBtn">ゲームスタート</button>
+<a class="big sub" href="qr-print.html">QRコードを印刷</a>
+<span id="gear"></span></section>
+<section id="scan" class="screen">
+<div class="hearts"></div>
+<div id="camwrap"><video id="video" playsinline muted autoplay></video>
+<div id="camerr" hidden>📷 カメラがつかえないよ<br><small>おとなのひとへ：カメラのきょかをしてください（README参照）</small><br><button class="big sub" id="retry">もういちど</button></div></div>
+<div id="side"><div id="msg">数字をさがそう！</div><div id="got">?</div><div id="found"></div></div>
+<canvas id="cv" hidden></canvas></section>
+<section id="calc" class="screen">
+<div class="hearts"></div><div id="q"></div><div id="bun"></div><div id="hint" hidden></div><div id="choices"></div></section>
+<section id="clear" class="screen">
+<h1 id="yatta">やったね！</h1><div id="box">🎁</div><div class="hearts"></div>
+<button class="big" id="again">もう一度あそぶ</button><div id="fx"></div></section>
+<div id="set" hidden><div class="panel"><h2>保護者向け設定</h2>
+<label>数字の最小<select id="sMin"></select></label><label>数字の最大<select id="sMax"></select></label>
+<label>選択肢の数<select id="sCh"><option>3</option><option>4</option><option>5</option></select></label>
+<label>ハートの数<select id="sHe"></select></label>
+<label><input type="checkbox" id="sVo"> 音声</label><label><input type="checkbox" id="sSf"> 効果音</label>
+<div><button class="big sub" id="sSave">保存</button> <button class="big" id="sClose">とじる</button></div></div></div>
+<script src="lib/jsQR.js"></script><script src="script.js"></script></body></html>

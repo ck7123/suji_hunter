@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="ja"><head><meta charset="utf-8"><title>QRコード印刷</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>body{font-family:sans-serif;margin:0}.ctl{padding:12px;background:#ffeaa7}.ctl input{font-size:18px;width:180px}.ctl button,.ctl a{font-size:18px;padding:6px 14px;margin:4px}
+#sheet{display:grid;grid-template-columns:1fr 1fr;width:210mm;margin:0 auto}
+.card{height:98.5mm;border:1px dashed #bbb;display:flex;flex-direction:column;align-items:center;justify-content:center;break-inside:avoid}
+.card img{width:62mm;height:62mm;image-rendering:pixelated}.card b{font-size:56pt;line-height:1.1}
+@page{size:A4;margin:0}@media print{.ctl{display:none}.card{border-color:#ddd}}</style></head><body>
+<div class="ctl"><a href="index.html">← もどる</a> 数字（カンマ区切り）<input id="nums" value="1,2,3,4,5"><button id="mk">つくる</button><button onclick="print()">印刷</button>
+<br><small>同じ数字のQRはどれも同じ数字として扱われます。足りなければ何枚でもコピー印刷してください。</small></div>
+<div id="sheet"></div><script src="lib/qrcode.js"></script>
+<script>function mk(){var h='';$('nums').value.split(',').forEach(function(s){var n=parseInt(s,10);if(!(n>=0))return;var q=qrcode(0,'M');q.addData('NUM:'+n);q.make();h+='<div class="card"><img src="'+q.createDataURL(10,4)+'"><b>'+n+'</b></div>'});document.getElementById('sheet').innerHTML=h}
+function $(i){return document.getElementById(i)}$('mk').onclick=mk;mk();</script></body></html>
