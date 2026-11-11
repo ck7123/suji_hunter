@@ -1,8 +1,8 @@
 (()=>{
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const DEF={min:1,max:5,choices:5,hearts:5,voice:true,sfx:true};
+const DEF={min:1,max:5,choices:3,hearts:5,voice:true,sfx:true};
 let S=Object.assign({},DEF);try{Object.assign(S,JSON.parse(localStorage.getItem('suji')||'{}'))}catch(e){}
-let hearts=0,found=[],stream=null,timer=0,cool=0,gen=0,answered=false,ac;
+let wrongs=0,hearts=0,found=[],stream=null,timer=0,cool=0,gen=0,answered=false,ac;
 const v=$('#video'),cv=$('#cv');
 function tone(f,d,t=0){if(!S.sfx)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime+t;o.frequency.value=f;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.18,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.start(n);o.stop(n+d)}catch(e){}}
 function say(t){if(!S.voice||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.85;u.pitch=1.3;speechSynthesis.speak(u)}catch(e){}}
@@ -32,19 +32,22 @@ $$('#bun i').forEach((el,i)=>setTimeout(()=>{if(my===gen){el.classList.add('num'
 function mergeHint(my){const bun=$('#bun');bun.className='';bun.innerHTML=g(found[0])+'<em>＋</em>'+g(found[1]);
 setTimeout(()=>{if(my===gen)bun.classList.add('merge')},600);
 setTimeout(()=>{if(my===gen)countUp(found[0]+found[1],my)},1700)}
-function startCalc(){const a=found[0],b=found[1],ans=a+b;gen++;const my=gen;answered=false;show('calc');drawHearts();
+function startCalc(){const a=found[0],b=found[1],ans=a+b;gen++;const my=gen;answered=false;wrongs=0;show('calc');drawHearts();
 $('#q').textContent=`${a}＋${b}＝？`;$('#bun').className='';$('#bun').innerHTML=g(a)+'<em>＋</em>'+g(b);$('#hint').hidden=true;$('#hint').className='';
 const pool=[];for(let i=1;i<=Math.max(10,S.max*2);i++)if(i!==ans)pool.push([Math.abs(i-ans)+Math.random()*2.5,i]);
 const opts=pool.sort((x,y)=>x[0]-y[0]).slice(0,S.choices-1).map(x=>x[1]).concat(ans).sort(()=>Math.random()-.5);
 $('#choices').innerHTML=opts.map((n,i)=>`<button class="c c${i%5}" data-n="${n}">${n}</button>`).join('');
 $$('.c').forEach(b=>b.onclick=()=>pick(+b.dataset.n,b,ans));
 say(`${a}たす${b}は、いくつかな？`);}
+function reveal(ans,h){answered=true;hearts=Math.max(0,hearts-1);drawHearts();h.className='';h.textContent='こたえは '+ans+' だよ！';
+$$('.c').forEach(x=>{if(+x.dataset.n===ans)x.classList.add('pop')});tone(280,.3);say('こたえは'+ans+'だよ');
+const my=++gen;mergeHint(my);setTimeout(newRound,1700+ans*450+1500)}
 function pick(n,b,ans){if(answered)return;const h=$('#hint');h.hidden=false;
 if(n===ans){answered=true;hearts++;drawHearts();h.className='ok';h.textContent='🎉 せいかい！';b.classList.add('pop');
 [523,659,784,1046].forEach((f,i)=>tone(f,.25,i*.12));say('せいかい！');
 const f=document.createElement('div');f.className='fly';f.textContent='❤️';document.body.appendChild(f);setTimeout(()=>f.remove(),1700);
 const my=++gen;countUp(ans,my);setTimeout(()=>{hearts>=S.hearts?clear():newRound()},2600)}
-else{const t=['もう一度かんがえてみよう！','うさぎさんを数えてみよう！'][Math.random()*2|0];h.className='';h.textContent='🐰 '+t;
+else{wrongs++;if(wrongs>=2){reveal(ans,h);return}const t=['もう一度かんがえてみよう！','うさぎさんを合わせて数えてみよう！','ゆっくり1つずつ数えてみよう！'][Math.random()*3|0];h.className='';h.textContent='🐰 '+t;
 b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),600);tone(280,.3);say(t);mergeHint(++gen)}}
 function clear(){gen++;show('clear');drawHearts();const bx=$('#box');bx.textContent='🎁';bx.className='';
 setTimeout(()=>{bx.textContent='🎉';bx.className='open';tone(392,.2);tone(523,.2,.15);tone(659,.2,.3);tone(784,.5,.45)},900);say('やったね！すごい！');
