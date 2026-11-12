@@ -58,8 +58,9 @@ $('#retry').onclick=startCam;
 // 保護者設定（右上を2秒長押し）
 const opt=(el,a,b,val)=>{el.innerHTML='';for(let i=a;i<=b;i++)el.add(new Option(i,i));el.value=val};
 let hold;const gear=$('#gear');
-gear.addEventListener('pointerdown',()=>{hold=setTimeout(()=>{opt($('#sMin'),1,9,S.min);opt($('#sMax'),2,10,S.max);$('#sCh').value=S.choices;opt($('#sHe'),1,10,S.hearts);$('#sVo').checked=S.voice;$('#sSf').checked=S.sfx;$('#sSame').checked=S.same;$('#set').hidden=false},2000)});
-['pointerup','pointerleave','pointercancel'].forEach(e=>gear.addEventListener(e,()=>clearTimeout(hold)));
+function openSet(){opt($('#sMin'),1,9,S.min);opt($('#sMax'),2,10,S.max);$('#sCh').value=S.choices;opt($('#sHe'),1,10,S.hearts);$('#sVo').checked=S.voice;$('#sSf').checked=S.sfx;$('#sSame').checked=S.same;$('#set').hidden=false}
+const startHold=()=>{clearTimeout(hold);hold=setTimeout(openSet,2000)};['touchstart','mousedown'].forEach(e=>gear.addEventListener(e,startHold));
+['touchend','touchcancel','mouseup','mouseleave'].forEach(e=>gear.addEventListener(e,()=>clearTimeout(hold)));
 $('#sClose').onclick=()=>$('#set').hidden=true;
 $('#sSave').onclick=()=>{let mn=+$('#sMin').value,mx=+$('#sMax').value;if(mx<=mn)mx=mn+1;
 S={min:mn,max:mx,choices:+$('#sCh').value,hearts:+$('#sHe').value,voice:$('#sVo').checked,sfx:$('#sSf').checked,same:$('#sSame').checked};
