@@ -15,8 +15,10 @@ stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'envi
 v.srcObject=stream;await v.play();clearInterval(timer);timer=setInterval(tick,250)}catch(e){$('#camerr').hidden=false}}
 function stopCam(){clearInterval(timer);timer=0;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}v.srcObject=null}
 function tick(){if(typeof jsQR==='undefined'){$('#msg').textContent='⚠️ lib/jsQR.js がありません';return}if(!v.videoWidth||Date.now()<cool)return;
-const w=Math.min(1280,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);cv.width=w;cv.height=h;
-const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(v,0,0,w,h);
+const bw=v.clientWidth||1,bh=v.clientHeight||1,sc=Math.max(bw/v.videoWidth,bh/v.videoHeight);
+const sw=bw/sc,sh=bh/sc,sx=(v.videoWidth-sw)/2,sy=(v.videoHeight-sh)/2;   // 画面に見えている範囲だけを読む
+const w=Math.min(1280,Math.round(sw)),h=Math.round(w*sh/sw);cv.width=w;cv.height=h;
+const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(v,sx,sy,sw,sh,0,0,w,h);
 const r=jsQR(c.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(r)onCode(r.data);else gone=true}
 function onCode(t){const m=/^NUM:(\d+)$/.exec((t||'').trim());if(!m)return;const n=+m[1];
 if(n<S.min||n>S.max){cool=Date.now()+1500;return}
