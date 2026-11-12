@@ -1,8 +1,8 @@
 (()=>{
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const DEF={min:1,max:5,choices:3,hearts:5,voice:true,sfx:true};
+const DEF={min:1,max:5,choices:3,hearts:5,voice:true,sfx:true,same:false};
 let S=Object.assign({},DEF);try{Object.assign(S,JSON.parse(localStorage.getItem('suji')||'{}'))}catch(e){}
-let wrongs=0,hearts=0,found=[],stream=null,timer=0,cool=0,gen=0,answered=false,ac;
+let gone=true,wrongs=0,hearts=0,found=[],stream=null,timer=0,cool=0,gen=0,answered=false,ac;
 const v=$('#video'),cv=$('#cv');
 function tone(f,d,t=0){if(!S.sfx)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime+t;o.frequency.value=f;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.18,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.start(n);o.stop(n+d)}catch(e){}}
 function say(t){if(!S.voice||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.85;u.pitch=1.3;speechSynthesis.speak(u)}catch(e){}}
@@ -17,15 +17,15 @@ function stopCam(){clearInterval(timer);timer=0;if(stream){stream.getTracks().fo
 function tick(){if(typeof jsQR==='undefined'){$('#msg').textContent='⚠️ lib/jsQR.js がありません';return}if(!v.videoWidth||Date.now()<cool)return;
 const w=Math.min(1280,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);cv.width=w;cv.height=h;
 const c=cv.getContext('2d',{willReadFrequently:true});c.drawImage(v,0,0,w,h);
-const r=jsQR(c.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(r)onCode(r.data)}
+const r=jsQR(c.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});if(r)onCode(r.data);else gone=true}
 function onCode(t){const m=/^NUM:(\d+)$/.exec((t||'').trim());if(!m)return;const n=+m[1];
 if(n<S.min||n>S.max){cool=Date.now()+1500;return}
-if(found.includes(n)){cool=Date.now()+1200;return}   // 重複登録しない
-found.push(n);cool=Date.now()+2000;drawFound();
+if(found.includes(n)&&!(S.same&&gone)){cool=Date.now()+1200;return}   // 重複登録しない（設定ONなら一度QRから離れたあとは同じ数字も可）
+gone=false;found.push(n);cool=Date.now()+2000;drawFound();
 const g=$('#got');g.textContent=n;g.classList.remove('pop');void g.offsetWidth;g.classList.add('pop');tone(660,.2);say(String(n));
 if(found.length===1)$('#msg').textContent='もう1つ見つけよう！';
 else{$('#msg').textContent='よーし！';stopCam();setTimeout(startCalc,1400)}}
-function newRound(){found=[];gen++;$('#got').textContent='?';$('#msg').textContent='数字をさがそう！';drawFound();drawHearts();show('scan');startCam();say('数字をさがそう')}
+function newRound(){found=[];gone=true;gen++;$('#got').textContent='?';$('#msg').textContent='数字をさがそう！';drawFound();drawHearts();show('scan');startCam();say('数字をさがそう')}
 const g=n=>'<div class="grp">'+'<i>🐰</i>'.repeat(n)+'</div>';
 function countUp(total,my){$('#bun').innerHTML='<div class="grp all">'+Array.from({length:total},(_,i)=>`<i data-n="${i+1}">🐰</i>`).join('')+'</div>';
 $$('#bun i').forEach((el,i)=>setTimeout(()=>{if(my===gen){el.classList.add('num');tone(500+i*50,.15)}},i*450))}
@@ -58,11 +58,11 @@ $('#retry').onclick=startCam;
 // 保護者設定（右上を2秒長押し）
 const opt=(el,a,b,val)=>{el.innerHTML='';for(let i=a;i<=b;i++)el.add(new Option(i,i));el.value=val};
 let hold;const gear=$('#gear');
-gear.addEventListener('pointerdown',()=>{hold=setTimeout(()=>{opt($('#sMin'),1,9,S.min);opt($('#sMax'),2,10,S.max);$('#sCh').value=S.choices;opt($('#sHe'),1,10,S.hearts);$('#sVo').checked=S.voice;$('#sSf').checked=S.sfx;$('#set').hidden=false},2000)});
+gear.addEventListener('pointerdown',()=>{hold=setTimeout(()=>{opt($('#sMin'),1,9,S.min);opt($('#sMax'),2,10,S.max);$('#sCh').value=S.choices;opt($('#sHe'),1,10,S.hearts);$('#sVo').checked=S.voice;$('#sSf').checked=S.sfx;$('#sSame').checked=S.same;$('#set').hidden=false},2000)});
 ['pointerup','pointerleave','pointercancel'].forEach(e=>gear.addEventListener(e,()=>clearTimeout(hold)));
 $('#sClose').onclick=()=>$('#set').hidden=true;
 $('#sSave').onclick=()=>{let mn=+$('#sMin').value,mx=+$('#sMax').value;if(mx<=mn)mx=mn+1;
-S={min:mn,max:mx,choices:+$('#sCh').value,hearts:+$('#sHe').value,voice:$('#sVo').checked,sfx:$('#sSf').checked};
+S={min:mn,max:mx,choices:+$('#sCh').value,hearts:+$('#sHe').value,voice:$('#sVo').checked,sfx:$('#sSf').checked,same:$('#sSame').checked};
 try{localStorage.setItem('suji',JSON.stringify(S))}catch(e){}$('#set').hidden=true};
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();
