@@ -7,7 +7,7 @@ const v=$('#video'),cv=$('#cv');
 function tone(f,d,t=0){if(!S.sfx)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),n=ac.currentTime+t;o.frequency.value=f;o.connect(g);g.connect(ac.destination);g.gain.setValueAtTime(.18,n);g.gain.exponentialRampToValueAtTime(.001,n+d);o.start(n);o.stop(n+d)}catch(e){}}
 function say(t){if(!S.voice||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';u.rate=.85;u.pitch=1.3;speechSynthesis.speak(u)}catch(e){}}
 function show(id){$$('.screen').forEach(e=>e.classList.toggle('active',e.id===id));if(id!=='scan')stopCam()}
-function drawHearts(){const h='❤️'.repeat(hearts)+'🤍'.repeat(Math.max(0,S.hearts-hearts));$$('.hearts').forEach(e=>e.textContent=h)}
+function drawHearts(){let h='';for(let i=0;i<S.hearts;i++)h+='<span class="h'+(i<hearts?' on':'')+'">❤️</span>';$$('.hearts').forEach(e=>e.innerHTML=h)}
 function drawFound(){let h='';for(let n=S.min;n<=S.max;n++)h+=`<b class="${found.includes(n)?'on':''}">${n}</b>`;$('#found').innerHTML=h}
 async function startCam(){$('#camerr').hidden=true;
 try{if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw 0;
