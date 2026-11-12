@@ -46,7 +46,7 @@ function pick(n,b,ans){if(answered)return;const h=$('#hint');h.hidden=false;
 if(n===ans){answered=true;hearts++;drawHearts();h.className='ok';h.textContent='🎉 せいかい！';b.classList.add('pop');
 [523,659,784,1046].forEach((f,i)=>tone(f,.25,i*.12));say('せいかい！');
 const f=document.createElement('div');f.className='fly';f.textContent='❤️';document.body.appendChild(f);setTimeout(()=>f.remove(),1700);
-const my=++gen;countUp(ans,my);setTimeout(()=>{hearts>=S.hearts?clear():newRound()},2600)}
+const my=++gen;countUp(ans,my);setTimeout(()=>{hearts>=S.hearts?clear():newRound()},Math.max(2600,ans*450+1800))}
 else{wrongs++;if(wrongs>=2){reveal(ans,h);return}const t=['もう一度かんがえてみよう！','うさぎさんを合わせて数えてみよう！','ゆっくり1つずつ数えてみよう！'][Math.random()*3|0];h.className='';h.textContent='🐰 '+t;
 b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),600);tone(280,.3);say(t);mergeHint(++gen)}}
 function clear(){gen++;show('clear');drawHearts();const bx=$('#box');bx.textContent='🎁';bx.className='';
